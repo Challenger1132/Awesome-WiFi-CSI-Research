@@ -38,21 +38,21 @@ elseif strcmp(option,'smoothing')
     end
     Rxx = Rxx/samples;
 end
-[eigvec_mat,diag_mat_of_eigval]=eig(Rxx); % ·µ»ØÌØÕ÷ÏòÁ¿¾ØÕóÓëÌØÕ÷Öµ¶Ô½Ç¾ØÕó
-eigval=diag(diag_mat_of_eigval);     % È¡ËùÓĞÌØÕ÷Öµ
-% [sorted_eigval,IndexVector]=sort(eigval);        % ¶ÔÌØÕ÷ÖµÉıĞòÅÅĞò£¬²¢·µ»Øindex vector
-% % ½«ÌØÕ÷ÏòÁ¿¾ØÕó°´ÁĞµ÷ÕûË³Ğò£¬µ÷ÕûÔ­ÔòÎª£º´óµÄÌØÕ÷Öµ¶ÔÓ¦µÄÌØÕ÷ÏòÁ¿¿¿×óÅÅ
-% % ¼´ÌØÕ÷ÏòÁ¿°´ÌØÕ÷Öµ½øĞĞ½µĞòÅÅÁĞ£¬°ÑÌØÕ÷Öµ¿´×ökey£¬°ÑÌØÕ÷ÏòÁ¿¿´×övalue
+[eigvec_mat,diag_mat_of_eigval]=eig(Rxx); % è¿”å›ç‰¹å¾å‘é‡çŸ©é˜µä¸ç‰¹å¾å€¼å¯¹è§’çŸ©é˜µ
+eigval=diag(diag_mat_of_eigval);     % å–æ‰€æœ‰ç‰¹å¾å€¼
+% [sorted_eigval,IndexVector]=sort(eigval);        % å¯¹ç‰¹å¾å€¼å‡åºæ’åºï¼Œå¹¶è¿”å›index vector
+% % å°†ç‰¹å¾å‘é‡çŸ©é˜µæŒ‰åˆ—è°ƒæ•´é¡ºåºï¼Œè°ƒæ•´åŸåˆ™ä¸ºï¼šå¤§çš„ç‰¹å¾å€¼å¯¹åº”çš„ç‰¹å¾å‘é‡é å·¦æ’
+% % å³ç‰¹å¾å‘é‡æŒ‰ç‰¹å¾å€¼è¿›è¡Œé™åºæ’åˆ—ï¼ŒæŠŠç‰¹å¾å€¼çœ‹åškeyï¼ŒæŠŠç‰¹å¾å‘é‡çœ‹åšvalue
 % eigvec_mat=fliplr(eigvec_mat(:,IndexVector)); 
 
 [sorted_eigval,IndexVector]=sort(eigval,'descend');
 eigvec_mat = eigvec_mat(:,IndexVector); 
 
 
-%% ĞÅÔ´Êı¹À¼Æ
+%% ä¿¡æºæ•°ä¼°è®¡
 global USE_NumOfSignalsEstimation
 if ~USE_NumOfSignalsEstimation
-    L = paths;  % ²»Ê¹ÓÃĞÅÔ´Êı¹À¼Æ£¬Ö±½ÓÈËÎª¸ø³ö
+    L = paths;  % ä¸ä½¿ç”¨ä¿¡æºæ•°ä¼°è®¡ï¼Œç›´æ¥äººä¸ºç»™å‡º
 else
     % 'AIC','MDL','HQ','EGM1','EGM2'
     algo_option = 'EGM1';
@@ -60,7 +60,7 @@ else
     fprintf('\nUsing %s NumOfSignalsEstimation, Estimate Paths is %d\n',algo_option, L);
 end
 
-%% ¼ÆËãMUSICÎ±Æ×
+%% è®¡ç®—MUSICä¼ªè°±
 aoa = -90:1:90;       % -90~90 [ns]
 tof = (0:1:100)*1e-9; % 1~100 [ns]
 Pmusic = zeros(length(aoa),length(tof));
@@ -70,14 +70,14 @@ for iAoA = 1:length(aoa)
             Nrx,ant_dist,fc,Nc,Delta_f, option);
         En=eigvec_mat(:,L+1:length(a));
         %Pmusic(iAoA,iToF) = abs(1/(a'*(En*En')*a));
-        % ¹éÒ»»¯MUSICÎ±Æ×
+        % å½’ä¸€åŒ–MUSICä¼ªè°±
         Pmusic(iAoA,iToF) = abs((a'*a)/(a'*(En*En')*a));
     end
 end
 
 LOG_DATE = strrep(datestr(now,30),'T','');
 
-%% MUSIC_AOA_TOF¿ÉÊÓ»¯
+%% MUSIC_AOA_TOFå¯è§†åŒ–
 hMUSIC = figure('Name', 'MUSIC_AOA_TOF', 'NumberTitle', 'off');
 [meshAoA,meshToF] = meshgrid(aoa,tof);
 SPmax=max(max(Pmusic));
@@ -93,7 +93,7 @@ fprintf('\nFind all peaks of MUSIC spectrum: \n');
 
 global PLOT_MUSIC_AOA PLOT_MUSIC_TOF 
 global SAVE_FIGURE
-%% MUSIC_AOA¿ÉÊÓ»¯
+%% MUSIC_AOAå¯è§†åŒ–
 if PLOT_MUSIC_AOA
     num_computed_paths = L;
     figure_name_string = sprintf('MUSIC_AOA, Number of Paths: %d', num_computed_paths);
@@ -110,13 +110,14 @@ if PLOT_MUSIC_AOA
     title('AoA Estimation')
     grid on;grid minor;hold on;
 
-   %% ¼ÆËãËùÓĞÂ·¾¶µÄAoA
-    % ½µĞò·µ»ØÇ°paths´óµÄ·åÖµ¼°ÆäË÷Òı
-    [pkt,lct]  = findpeaks(PmusicEnvelope_AOA,aoa,'SortStr','descend','NPeaks',num_computed_paths); 
-    % ±ê¼Ç·åÖµ
-    plot(lct,pkt,'o','MarkerSize',12)
-    % ÉıĞòÊä³ö·åÖµµÄË÷Òı
-    disp(['Calculated AoA: ' num2str(sort(round(lct),'ascend')) ' [deg]'] )
+   %% è®¡ç®—æ‰€æœ‰è·¯å¾„çš„AoA
+    % é™åºè¿”å›å‰pathså¤§çš„å³°å€¼åŠå…¶ç´¢å¼•
+    [pkt,lct]  = findpeaks(PmusicEnvelope_AOA,'SortStr','descend','NPeaks',num_computed_paths); 
+    % æ ‡è®°å³°å€¼
+    plot(aoa(lct),pkt,'o','MarkerSize',12)
+    % lctæ˜¯PmusicEnvelope_AOAçš„å³°å€¼ä¸‹æ ‡å¹¶ä¸æ˜¯çœŸæ­£çš„è§’åº¦å€¼ï¼Œå› æ­¤è¦å–æ­£çœŸè§’åº¦å€¼aoa(lct)
+    % å‡åºè¾“å‡ºå³°å€¼çš„ç´¢å¼•
+    disp(['Calculated AoA: ' num2str(sort(round(aoa(lct)),'ascend')) ' [deg]'] )
     
     if SAVE_FIGURE
         figureName = ['./figure/' LOG_DATE '_' 'MUSIC_AOA' '.jpg'];
@@ -124,7 +125,7 @@ if PLOT_MUSIC_AOA
     end
 end
 
-%% MUSIC_TOF¿ÉÊÓ»¯
+%% MUSIC_TOFå¯è§†åŒ–
 if PLOT_MUSIC_TOF
     figure_name_string = sprintf('MUSIC_TOF, %d paths', num_computed_paths);
     figure('Name', figure_name_string, 'NumberTitle', 'off');
@@ -139,26 +140,28 @@ if PLOT_MUSIC_TOF
     ylabel('Spectrum function P(\theta, \tau)  / dB')
     title('ToF Estimation')
     grid on;grid minor;hold on;
-   %% ¼ÆËãËùÓĞÂ·¾¶µÄToF
-    [pkt,lct]  = findpeaks(PmusicEnvelope_ToF,tof*1e9,'SortStr','descend','NPeaks',num_computed_paths); % 'MinPeakHeight',-4
-    plot(lct,pkt,'o','MarkerSize',12)
-    disp(['Calculated ToF: ' num2str(sort(round(lct),'ascend')) ' [ns]'] );
+   %% è®¡ç®—æ‰€æœ‰è·¯å¾„çš„ToF
+    [pkt,lct]  = findpeaks(PmusicEnvelope_ToF,'SortStr','descend','NPeaks',num_computed_paths); % 'MinPeakHeight',-4
+    plot(tof(lct)*1e9,pkt,'o','MarkerSize',12)
+    % lctæ˜¯PmusicEnvelope_ToFå³°å€¼ä¸‹æ ‡ï¼Œä¸æ˜¯çœŸæ­£çš„æ—¶é—´å€¼
+    disp(['Calculated ToF: ' num2str(sort(round(tof(lct)*1e9),'ascend')) ' [ns]'] );
     
     if SAVE_FIGURE
         figureName = ['./figure/' LOG_DATE '_' 'MUSIC_TOF' '.jpg'];
         saveas(gcf,figureName);
     end
     
-   %% ¼ÆËãÖ±Éä¾¶AoAºÍToF
+   %% è®¡ç®—ç›´å°„å¾„AoAå’ŒToF
     fprintf('\nFind Direct Path AoA and ToF: \n')
-    direct_path_tof_index = find(tof*1e9 == min(lct));
-    direct_path_tof = min(lct); %[ns]
+    direct_path_tof_index = find(tof == tof(min(lct)));
+    % ä¸‹æ ‡å€¼lctå’Œtofæ—¶é—´å€¼ä¸ç›¸ç­‰ï¼Œä¸¤è€…ç›¸å·®1ï¼Œä¸‹æ ‡ä»1å¼€å§‹ï¼Œtofå–å€¼æ˜¯ä»0å¼€å§‹
+    direct_path_tof = tof(min(lct))*1e9;
     [~,direct_path_aoa_index] = max(Pmusic(:,direct_path_tof_index));
     direct_path_aoa = aoa(direct_path_aoa_index);
     disp(['(AOA, ToF) =  ('  num2str(direct_path_aoa) ' [deg], '  ...
        num2str(direct_path_tof) ' [ns]) ']);
 
-   %% ÔÚMUSICÎ±Æ×ÖĞ±ê¼ÇÖ±Éä¾¶
+   %% åœ¨MUSICä¼ªè°±ä¸­æ ‡è®°ç›´å°„å¾„
     set(groot,'CurrentFigure',hMUSIC);hold on;
     x_aoa = direct_path_aoa;
     y_tof = direct_path_tof;
@@ -172,7 +175,7 @@ if PLOT_MUSIC_TOF
         round(direct_path_aoa), ...
         round(direct_path_tof));
     text(x_aoa,y_tof,z_dB,txt);
-    % ÉèÖÃfigure hMUSICÎªµ±Ç°ÊÓÍ¼
+    % è®¾ç½®figure hMUSICä¸ºå½“å‰è§†å›¾
     figure(hMUSIC);
     view(-60,30);
     
