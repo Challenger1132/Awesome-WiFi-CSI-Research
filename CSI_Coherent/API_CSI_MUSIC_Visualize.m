@@ -162,11 +162,12 @@ if PLOT_MUSIC_TOF
        num2str(direct_path_tof) ' [ns]) ']);
 
    %% 在MUSIC伪谱中标记直射径
-    set(groot,'CurrentFigure',hMUSIC);hold on;
+    % set(groot,'CurrentFigure',hMUSIC);hold on;
     x_aoa = direct_path_aoa;
     y_tof = direct_path_tof;
     z_dB = Pmusic(direct_path_aoa_index,direct_path_tof_index);
-    plot3(x_aoa,y_tof,z_dB,'o','MarkerSize',12);
+    currentAxis = get(hMUSIC, 'CurrentAxes');
+    plot3(currentAxis, x_aoa, y_tof, z_dB, 'o', 'MarkerSize',12);
 %         scatter3(direct_path_aoa,direct_path_tof, ...
 %             Pmusic(direct_path_aoa_index,direct_path_tof_index), ... 
 %                 'filled', ...
